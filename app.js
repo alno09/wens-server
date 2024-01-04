@@ -8,6 +8,7 @@ const cors = require('cors');
 const productRoute = require('./app/product/routes');
 const categoryRoute = require('./app/category/routes');
 const tagRoute = require('./app/tag/routes');
+const authRoute = require('./app/auth/routes');
 
 var app = express();
 
@@ -26,6 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // }));
 
 // Product API
+app.use('/auth', authRoute);
 app.use('/api', productRoute);
 app.use('/api', categoryRoute);
 app.use('/api', tagRoute);
