@@ -88,14 +88,31 @@ const store = async (req, res, next) => {
 
 const index = async(req, res, next) => {
     try {
-        let { skip=0, limit=10 } = req.query;
+        let { skip=0, limit=10, q='', category='' } = req.query;
+        let criteria = {};
+
+        if (q.length) {
+            criteria = {...criteria, name: {$regex: `${q}`, $options: 'i'}};
+        }
+
+        if (category.length) {
+            categoryResult = await Category.findOne({name: {$regex: `${category}`, $options: 'i'}});
+
+            if (categoryResult) {
+                criteria = {...criteria, category: categoryResult._id};
+            }
+        }
+
+        let count = await Product.find(criteria).countDocuments();
         let product = await Product
-        .find()
+        .find(criteria)
         .skip(parseInt(skip))
         .limit(parseInt(limit))
-        .populate('category')
-        .populate('tags');
-        return res.json(product);
+        .populate('category');
+        return res.json({
+            date: product,
+            count
+        });
     } catch(err) {
         next(err);
     }

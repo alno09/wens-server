@@ -9,6 +9,7 @@ const productRoute = require('./app/product/routes');
 const categoryRoute = require('./app/category/routes');
 const tagRoute = require('./app/tag/routes');
 const authRoute = require('./app/auth/routes');
+const jwt = require('jsonwebtoken');
 
 var app = express();
 
@@ -27,6 +28,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 // }));
 
 // Product API
+app.get('/degass', async (req, res) => {
+  let user = ({name: 'joey', favColor: 'blue', id: '123'})
+
+  const signed = jwt.sign({user: 'user'}, 'TOP_SECRET_KEY')
+
+  console.log('token : ', signed);
+
+  res.send('lihat terminal')
+})
 app.use('/auth', authRoute);
 app.use('/api', productRoute);
 app.use('/api', categoryRoute);

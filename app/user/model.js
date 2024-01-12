@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 const AutoIncrement = require('mongoose-sequence')(mongoose);
-const cyrpt = require('bcrypt');
+const crypt = require('bcrypt');
 
-let userSchema = Schema({
+let userSchema = mongoose.Schema({
         full_name: {
             type: String,
             required: [true, 'nama harus diisi'],
@@ -44,26 +44,27 @@ userSchema.path('email').validate(function(value) {
 }, attr => `${attr.value} harus menggunakan email yang valid`);
 
 // validasi inputan email
-userSchema.path('email').validate(async function(value) {
+// userSchema.path('email').validate(async function(value) {
 
-    try {
-        const count = await this.model('User').count({email: value});
+//     try {
+//         const count = await this.model('User').count({email: value});
     
-        return !count;
-    } catch(err) {
-        throw err;
-    }
+//         return !count;
+//     } catch(err) {
+//         throw err;
+//     }
     
-}, attr => `${attr.value} sudah terdaftar`);
+// }, attr => `${attr.value} sudah terdaftar`);
+
 
 // hashing password
 const HASH_ROUND = 10;
 userSchema.pre('save', function(next) {
-    this.password = bcrypt.hashSync(this.password, HASH_ROUND);
+    this.password = crypt.hashSync(this.password, HASH_ROUND);
     next()
 });
 
 // pembuatan auto increment
 userSchema.plugin(AutoIncrement, {inc_field: 'customer_id'});
 
-module.exports = model('User', userSchema);
+module.exports = mongoose.model('User', userSchema);
